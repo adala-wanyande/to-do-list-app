@@ -1,54 +1,126 @@
-import DeployButton from "../components/DeployButton";
-import AuthButton from "../components/AuthButton";
-import { createClient } from "@/utils/supabase/server";
-import ConnectSupabaseSteps from "@/components/tutorial/ConnectSupabaseSteps";
-import SignUpUserSteps from "@/components/tutorial/SignUpUserSteps";
-import Header from "@/components/Header";
+"use client";
 
-export default async function Index() {
-  const canInitSupabaseClient = () => {
-    // This function is just for the interactive tutorial.
-    // Feel free to remove it once you have Supabase connected.
-    try {
-      createClient();
-      return true;
-    } catch (e) {
-      return false;
+import React, { useEffect, useState, useCallback } from "react";
+import Navbar from "@/components/Navbar";
+import TaskList from "@/components/TaskList";
+import AddNewItemButton from "@/components/AddNewItemButton";
+import { AddNewItemModal } from "@/components/AddNewItemModal";
+import { createClient } from "@/utils/supabase/client";
+
+interface Task {
+  id: number;
+  title: string;
+  label: string;
+  priority: string;
+  isComplete: boolean;
+}
+
+const Home = () => {
+  const [isItemModalOpen, setItemModalOpen] = useState<boolean>(false);
+  const [activeTag, setActiveTag] = useState<string>("All");
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.from("tasks").select("*");
+        if (error) {
+          throw error;
+        }
+        setTasks(data || []);
+      } catch (error: any) {
+        console.error("Failed to fetch tasks:", error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, [isItemModalOpen, activeTag]); // Re-fetch tasks when the modal closes or activeTag changes
+
+  const handleModalClose = useCallback(() => {
+    setItemModalOpen(false);
+  }, []);
+
+  const handleComplete = async (taskId: number) => {
+    const updatedTask = tasks.find((task) => task.id === taskId);
+    if (updatedTask) {
+      const { error } = await supabase
+        .from("tasks")
+        .update({ is_complete: !updatedTask.isComplete })
+        .eq("id", taskId);
+
+      if (error) {
+        console.error("Failed to update task completion:", error.message);
+      } else {
+        setTasks(
+          tasks.map((task) =>
+            task.id === taskId
+              ? { ...task, isComplete: !task.isComplete }
+              : task
+          )
+        );
+      }
     }
   };
 
-  const isSupabaseConnected = canInitSupabaseClient();
+  const handleDelete = async (taskId: number) => {
+    const { error } = await supabase.from("tasks").delete().eq("id", taskId);
+
+    if (error) {
+      console.error("Failed to delete task:", error.message);
+    } else {
+      setTasks(tasks.filter((task) => task.id !== taskId));
+    }
+  };
+
+  const filteredTasks = tasks.filter(
+    (task) => activeTag === "All" || task.label === activeTag
+  );
+  const incompleteTasks = filteredTasks.filter((task) => !task.isComplete);
+  const completedTasks = filteredTasks.filter((task) => task.isComplete);
+
+  if (loading) {
+    return (
+      <div className="full-screen-center">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center">
-      <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-        <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
-          <DeployButton />
-          {isSupabaseConnected && <AuthButton />}
-        </div>
-      </nav>
-
-      <div className="animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
-        <Header />
-        <main className="flex-1 flex flex-col gap-6">
-          <h2 className="font-bold text-4xl mb-4">Next steps</h2>
-          {isSupabaseConnected ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-        </main>
+    <>
+      <h1 className="scroll-m-20 text-2xl font-extrabold tracking-tight lg:text-5xl p-4 bg-primary">
+        Update: Authentication coming soon😘...
+      </h1>
+      <Navbar tasks={tasks} onTagSelect={setActiveTag} activeTag={activeTag} />
+      <div className="w-full">
+        <h4 className="text-xl font-semibold p-4">Incomplete Tasks</h4>
+        <TaskList
+          tasks={incompleteTasks}
+          onComplete={handleComplete}
+          onDelete={handleDelete}
+        />
       </div>
-
-      <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
-        <p>
-          Powered by{" "}
-          <a
-            href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-            target="_blank"
-            className="font-bold hover:underline"
-            rel="noreferrer"
-          >
-            Supabase
-          </a>
-        </p>
-      </footer>
-    </div>
+      <div className="w-full">
+        <h4 className="text-xl font-semibold p-4">Completed Tasks</h4>
+        <TaskList
+          tasks={completedTasks}
+          onComplete={handleComplete}
+          onDelete={handleDelete}
+        />
+      </div>
+      <div className="fixed-bottom h-24">
+        <AddNewItemButton onClick={() => setItemModalOpen(true)} />
+      </div>
+      {isItemModalOpen && (
+        <AddNewItemModal isOpen={isItemModalOpen} onClose={handleModalClose} />
+      )}
+    </>
   );
-}
+};
+
+export default Home;
