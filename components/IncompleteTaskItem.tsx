@@ -7,13 +7,17 @@ interface TaskItemProps {
     title: string;
     label: string;
     priority: string;
-    isComplete: boolean;
+    is_complete: boolean;
   };
   onComplete: (id: number) => void;
   onDelete: (id: number) => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onDelete }) => {
+const IncompleteTaskItem: React.FC<TaskItemProps> = ({
+  task,
+  onComplete,
+  onDelete,
+}) => {
   const handleCompletionClick = () => {
     onComplete(task.id);
   };
@@ -35,18 +39,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onDelete }) => {
     }
   };
 
-  const taskContainerClass = `flex justify-between items-center p-4 m-4 bg-[#D9D9D9] shadow rounded-lg ${
-    task.isComplete ? "opacity-50 line-through" : ""
-  }`;
-
   return (
-    <div className={taskContainerClass}>
+    <div className="flex justify-between items-center p-4 m-4 bg-[#D9D9D9] shadow rounded-lg">
       <button onClick={handleCompletionClick}>
-        {task.isComplete ? (
-          <CircleCheck className="ml-4 h-6 w-6 text-green-500" />
-        ) : (
-          <Circle className="ml-4 h-6 w-6 text-gray-500" />
-        )}
+        <Circle className="ml-4 h-6 w-6 text-gray-500" />
       </button>
       <p className="font-medium text-lg">{task.title}</p>
       <p className="font-normal text-xs">({task.label})</p>
@@ -58,4 +54,4 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onComplete, onDelete }) => {
   );
 };
 
-export default TaskItem;
+export default IncompleteTaskItem;

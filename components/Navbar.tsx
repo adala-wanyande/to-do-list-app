@@ -9,7 +9,7 @@ interface NavbarProps {
     title: string;
     label: string;
     priority: string;
-    isComplete: boolean;
+    is_complete: boolean;
   }>;
 }
 
@@ -29,9 +29,9 @@ const Navbar = ({ onTagSelect, activeTag, tasks }: NavbarProps) => {
   return (
     <nav className="items-center p-4 w-full">
       <h4 className="text-xl font-semibold tracking-tight py-4">Tags</h4>
-      <div className="flex items-center space-x-4 mt-2">
+      <div className="flex items-center space-x-4 mt-2 overflow-x-auto w-full">
         {isLoading ? (
-          <div>Loading tags...</div> // Display while loading
+          <div>Loading tags...</div>
         ) : (
           labels.map((label, index) => (
             <a
@@ -42,8 +42,8 @@ const Navbar = ({ onTagSelect, activeTag, tasks }: NavbarProps) => {
                 onTagSelect(label);
               }}
               className={`${
-                activeTag === label ? "bg-primary" : "text-black"
-              } cursor-pointer p-2 px-4 rounded hover:bg-primary hover:text-white`}
+                activeTag === label ? "bg-primary text-black" : "text-black"
+              } cursor-pointer p-2 px-4 mb-4 rounded hover:bg-primary hover:text-white whitespace-nowrap`}
             >
               {label}
             </a>
