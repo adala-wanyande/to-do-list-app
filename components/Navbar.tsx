@@ -43,7 +43,7 @@ const Navbar = ({ onTagSelect, activeTag, tasks }: NavbarProps) => {
               }}
               className={`${
                 activeTag === label ? "bg-primary text-black" : "text-black"
-              } cursor-pointer p-2 px-4 mb-4 rounded hover:bg-primary hover:text-white whitespace-nowrap`}
+              } cursor-pointer p-2 px-4 mb-4 rounded hover:bg-primary whitespace-nowrap`}
             >
               {label}
             </a>
