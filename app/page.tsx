@@ -94,8 +94,11 @@ const Home = () => {
   return (
     <>
       <h1 className="scroll-m-20 text-2xl font-extrabold tracking-tight lg:text-5xl p-4 bg-primary">
-        Update: Authentication coming soon😘...
+        Adala's Lo-Fi To-Do List App
       </h1>
+      <h2 className="scroll-m-20 pb-2 text-xl font-semibold tracking-tight first:mt-0">
+        (Kindly run on mobile😘)
+      </h2>
       <Navbar tasks={tasks} onTagSelect={setActiveTag} activeTag={activeTag} />
       <div className="w-full">
         <h4 className="text-xl font-semibold p-4">Incomplete Tasks</h4>
