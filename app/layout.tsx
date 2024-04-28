@@ -33,6 +33,7 @@ export default function RootLayout({
         )}
       >
         {" "}
+
         <main className="min-h-screen flex flex-col items-center lg:mx-32">
           {children}
         </main>
