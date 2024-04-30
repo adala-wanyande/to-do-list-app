@@ -44,7 +44,7 @@ const IncompleteTaskItem: React.FC<TaskItemProps> = ({
       <button onClick={handleCompletionClick}>
         <Circle className="ml-4 h-6 w-6 text-gray-500" />
       </button>
-      <p className="font-medium text-lg">{task.title}</p>
+      <p className="font-medium text-lg text-left px-4">{task.title}</p>
       <p className="font-normal text-xs">({task.label})</p>
       <Flag className={`${getPriorityColor()} h-5 w-5`} />
       <button onClick={handleDeleteClick}>
